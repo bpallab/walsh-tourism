@@ -1,5 +1,3 @@
-## 5. `app.py` (Streamlit Interface)
-
 !pip install streamlit
 import streamlit as st
 import pandas as pd
@@ -34,7 +32,20 @@ if st.button("Predict"):
     local_model = hf_hub_download(repo_id="pallabbh/tourism-model", filename="best_xgb_model.json")
     model = xgb.XGBClassifier()
     model.load_model(local_model)
+
+    # Define the exact feature order as expected by the model during training
+    # This list must precisely match the order of columns in X_train
+    feature_order = [
+        'Age', 'TypeofContact', 'CityTier', 'DurationOfPitch', 'Occupation', 'Gender',
+        'NumberOfPersonVisiting', 'NumberOfFollowups', 'ProductPitched', 'PreferredPropertyStar',
+        'MaritalStatus', 'NumberOfTrips', 'Passport', 'PitchSatisfactionScore', 'OwnCar',
+        'NumberOfChildrenVisiting', 'Designation', 'MonthlyIncome'
+    ]
+
     df = pd.DataFrame([info])
+    # Ensure the columns in the DataFrame are in the correct order
+    df = df[feature_order]
+
     pred = model.predict(df)[0]
     result = "Will Purchase" if pred == 1 else "Will Not Purchase"
     st.success(f"Prediction: {result}")

@@ -1,0 +1,7 @@
+pandas
+scikit-learn
+xgboost
+mlflow
+datasets
+streamlit
+huggingface_hub

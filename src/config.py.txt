@@ -1,0 +1,8 @@
+## 4. `src/config.py`
+
+# Configuration file for dataset/model paths and settings
+
+DATA_HF_PATH_TRAIN = 'pallabbh/tourism-dataset-train'
+DATA_HF_PATH_TEST = 'pallabbh/tourism-dataset-test'
+MODEL_HF_PATH = 'pallabbh/tourism-model'
+TARGET_COLUMN = 'ProdTaken'

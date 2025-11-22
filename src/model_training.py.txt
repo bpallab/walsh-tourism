@@ -1,0 +1,46 @@
+## 2. `src/model_training.py`
+
+!pip install mlflow
+import pandas as pd
+import mlflow
+import xgboost as xgb
+from sklearn.metrics import accuracy_score
+from datasets import load_dataset
+import os
+from huggingface_hub import HfApi
+
+def load_data():
+    train = load_dataset('pallabbh/tourism-dataset-train')['train'].to_pandas()
+    test = load_dataset('pallabbh/tourism-dataset-test')['train'].to_pandas()
+    return train, test
+
+def main():
+    mlflow.set_experiment("TourismPackage")
+    train, test = load_data()
+    X_train = train.drop('ProdTaken', axis=1)
+    y_train = train['ProdTaken']
+    X_test = test.drop('ProdTaken', axis=1)
+    y_test = test['ProdTaken']
+
+    with mlflow.start_run():
+        model = xgb.XGBClassifier(n_estimators=100, random_state=42)
+        model.fit(X_train, y_train)
+        preds = model.predict(X_test)
+        acc = accuracy_score(y_test, preds)
+        mlflow.log_param('n_estimators', 100)
+        mlflow.log_metric('accuracy', acc)
+        # Save and push model artifact
+        os.makedirs('model_dir', exist_ok=True)
+        model.save_model('model_dir/best_xgb_model.json')
+
+        api = HfApi()
+        # Create the repository if it doesn't exist
+        api.create_repo(repo_id='pallabbh/tourism-model', repo_type='model', exist_ok=True)
+        api.upload_file(
+            path_or_fileobj='model_dir/best_xgb_model.json',
+            path_in_repo='best_xgb_model.json',
+            repo_id='pallabbh/tourism-model'
+        )
+
+if __name__ == '__main__':
+    main()

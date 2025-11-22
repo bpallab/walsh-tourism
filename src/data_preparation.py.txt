@@ -1,0 +1,41 @@
+## 1. `src/data_preparation.py`
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from datasets import Dataset
+
+def clean_data(df):
+    # Drop columns not in rubric, if any
+    drop_cols = ["CustomerID"]  # Example, modify as required
+    df = df.drop(columns=drop_cols, errors='ignore')
+    # Fill NAs with median or appropriate values
+    for col in df.select_dtypes(include='number').columns:
+        df[col].fillna(df[col].median(), inplace=True)
+    for col in df.select_dtypes(include='object').columns:
+        df[col].fillna(df[col].mode()[0], inplace=True)
+    # Convert categoricals (as needed)
+    cat_cols = ['TypeofContact', 'Occupation', 'Gender', 'MaritalStatus', 'Designation', 'ProductPitched']
+    for col in cat_cols:
+        if col in df.columns:
+            df[col] = df[col].astype('category').cat.codes
+    return df
+
+def register_to_hf(df, hf_path):
+    ds = Dataset.from_pandas(df, preserve_index=False)
+    ds.push_to_hub(hf_path)
+
+def main():
+    df = pd.read_csv('/content/drive/My Drive/Walsh DBA/tourism.csv')
+    df = clean_data(df)
+    train, test = train_test_split(df, test_size=0.2, random_state=42)
+
+    # Create the 'data' directory if it doesn't exist
+    os.makedirs('data', exist_ok=True)
+
+    train.to_csv('data/train.csv', index=False)
+    test.to_csv('data/test.csv', index=False)
+    register_to_hf(train, 'pallabbh/tourism-dataset-train')
+    register_to_hf(test, 'pallabbh/tourism-dataset-test')
+
+if __name__ == "__main__":
+    main()

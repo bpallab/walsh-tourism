@@ -1,0 +1,20 @@
+name: MLOps Tourism Pipeline
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.10
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Data Preparation
+        run: python src/data_preparation.py
+      - name: Model Training
+        run: python src/model_training.py
+      - name: Deploy to Hugging Face / Run App
+        run: echo "Deployment script or trigger here"

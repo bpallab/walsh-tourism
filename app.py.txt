@@ -1,0 +1,40 @@
+## 5. `app.py` (Streamlit Interface)
+
+!pip install streamlit
+import streamlit as st
+import pandas as pd
+from huggingface_hub import hf_hub_download
+import xgboost as xgb
+
+st.title("Tourism Package Purchase Prediction")
+
+# Input components (adapt as per your data fields)
+info = {}
+info['Age'] = st.number_input('Age', 0, 120)
+info['TypeofContact'] = st.selectbox("Type of Contact", [0, 1])
+info['CityTier'] = st.selectbox("City Tier", [1, 2, 3])
+info['Occupation'] = st.selectbox("Occupation (coded)", [0,1,2,3])
+info['Gender'] = st.selectbox("Gender (coded)", [0,1])
+info['NumberOfPersonVisiting'] = st.number_input("Number Of Person Visiting", 1, 20)
+info['PreferredPropertyStar'] = st.number_input("Preferred Property Star", 1, 5)
+info['MaritalStatus'] = st.selectbox("Marital Status (coded)", [0, 1, 2])
+info['NumberOfTrips'] = st.number_input("Number of Trips", 0, 20)
+info['Passport'] = st.selectbox("Passport (0=No,1=Yes)", [0,1])
+info['OwnCar'] = st.selectbox("Own Car (0=No,1=Yes)", [0,1])
+info['NumberOfChildrenVisiting'] = st.number_input("Number Of Children Visiting", 0, 5)
+info['Designation'] = st.selectbox("Designation (coded)", [0,1,2,3])
+info['MonthlyIncome'] = st.number_input("Monthly Income", 0, 100000)
+info['PitchSatisfactionScore'] = st.slider("Pitch Satisfaction Score", 0, 5)
+info['ProductPitched'] = st.selectbox("Product Pitched (coded)", [0,1,2,3])
+info['NumberOfFollowups'] = st.number_input("Number of Follow-Ups", 0, 15)
+info['DurationOfPitch'] = st.number_input("Duration Of Pitch", 0, 60)
+
+if st.button("Predict"):
+    # Load the model
+    local_model = hf_hub_download(repo_id="pallabbh/tourism-model", filename="best_xgb_model.json")
+    model = xgb.XGBClassifier()
+    model.load_model(local_model)
+    df = pd.DataFrame([info])
+    pred = model.predict(df)[0]
+    result = "Will Purchase" if pred == 1 else "Will Not Purchase"
+    st.success(f"Prediction: {result}")

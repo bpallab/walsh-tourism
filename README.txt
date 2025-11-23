@@ -20,7 +20,7 @@ project-root/
 │   └── config.py           # Configuration variables
 ├── .github/workflows/
 │   └── pipeline.yml      # GitHub Actions CI/CD pipeline
-├── README.md             # This file
+├── README.txt             # This file
 └── [project_notebook].ipynb # Original development notebook (e.g., this Colab notebook)
 ```
 
@@ -105,8 +105,7 @@ This GitHub Actions workflow automates the Continuous Integration/Continuous Dep
     ```bash
     python src/data_preparation.py
     ```
-    *Note: The current `data_preparation.py` is configured for Google Colab with Google Drive mounting. You might need to modify the data loading line `df = pd.read_csv('/content/drive/My Drive/Walsh DBA/tourism.csv')` to a local path or a different data source if running outside Colab.* For initial setup, running it in the Colab notebook is recommended to push the datasets.
-
+   
 5.  **Run Model Training (if model is not already on Hugging Face Hub):**
     ```bash
     python src/model_training.py
@@ -154,9 +153,4 @@ This GitHub Actions workflow automates the Continuous Integration/Continuous Dep
 - **Model:**
   - `pallabbh/tourism-model`
 
-## Next Steps
 
-- Deploy the Docker image to a cloud platform (e.g., AWS EC2, Google Cloud Run, Azure Container Instances).
-- Set up monitoring for the deployed model's performance and data drift.
-- Implement more sophisticated experiment tracking and model registry features using MLflow.
-- Enhance the Streamlit UI with more visualizations or input validation.
